@@ -1,10 +1,12 @@
 <template>
-  <div>Mediator page running async process</div>
+  <div style="padding: 10px;">
+    Mediator page running async process
+  </div>
 </template>
 
 <script setup>
-import { onMounted, toRefs } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import {computed, onMounted, toRefs} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
 
 const props = defineProps({
   mode: {
@@ -14,18 +16,21 @@ const props = defineProps({
   },
 });
 
-const { mode } = toRefs(props);
+const {mode} = toRefs(props);
 const router = useRouter();
+const route = useRoute();
+
+const target = computed(() => route?.query?.target);
 
 onMounted(() => {
   setTimeout(() => {
     const url = new URL(window.location.href);
 
     if (mode.value === 'window') {
-      const targetUrl =  new URL('/b', url.origin);
-      window.location.href = targetUrl.toString();
+      const targetUrl = new URL('/b', url.origin);
+      window.location.href = target.value || targetUrl.toString();
     } else {
-      router.replace('/b');
+      router.replace(target.value || '/b');
     }
   }, 3000);
 });
